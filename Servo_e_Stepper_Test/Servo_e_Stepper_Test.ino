@@ -29,9 +29,13 @@ int SteperLimit = 1024;
 //Var Utils
 boolean power = false;
 
-//Led Utils 
+//Led Utils
 const int pinLedAccensione = 10;
 
+//Save movement
+int posArm1[5];
+int posBase[5];
+int movementCont = 0;
 
 void setup() {
   //Setup Porta Seriale
@@ -74,14 +78,20 @@ void loop() {
       if (power) {
         reset();
         power = false;
-        digitalWrite(pinLedAccensione,LOW);
+        digitalWrite(pinLedAccensione, LOW);
         Serial.print("Power Off");
       } else {
-         ServoxPos = 120;
-         moveTo(ServoxPos, ServoxVelocity);
-         power = true;
-         digitalWrite(pinLedAccensione,HIGH);
-         Serial.print("Power On");
+        ServoxPos = 120;
+        moveTo(ServoxPos, ServoxVelocity);
+        power = true;
+        digitalWrite(pinLedAccensione, HIGH);
+
+        digitalWrite(motorPin4, LOW);
+        digitalWrite(motorPin3, LOW);
+        digitalWrite(motorPin2, LOW);
+        digitalWrite(motorPin1, LOW);
+
+        Serial.print("Power On");
       }
 
     }
@@ -113,7 +123,7 @@ void loop() {
           if ((ServoxPos + ServoxConst) <= ServoxLimitS) {
             ServoxPos = ServoxPos + ServoxConst;
             moveTo(ServoxPos, ServoxVelocity);
-             Serial.print("Servo Position = ");
+            Serial.print("Servo Position = ");
             Serial.println(ServoxPos);
           }
           break;
@@ -123,6 +133,69 @@ void loop() {
             moveTo(ServoxPos, ServoxVelocity);
             Serial.print("Servo Position = ");
             Serial.println(ServoxPos);
+          }
+          break;
+        case 'z':
+          if (movementCont < 5) {
+            posArm1[movementCont] = ServoxPos;
+            Serial.print("Save Servo Position = ");
+            Serial.println(ServoxPos);
+            posBase[movementCont] = valStepper;
+            Serial.print("Save Stepper position = ");
+            Serial.println(valStepper);
+
+            movementCont = movementCont + 1;
+            Serial.print("Movement Cont = ");
+            Serial.println(movementCont);
+          }
+          break;
+        case 'x':
+
+          if (movementCont > 0) {
+            for (int i = 0; i < movementCont; i++) {
+              Serial.print("Movement Cont = ");
+              Serial.println(i);
+              //Base
+
+              valStepper = -valStepper;
+              myStepper.step(valStepper);
+              valStepper =   posBase[i];
+              myStepper.step(valStepper);
+              Serial.print("Stepper position = ");
+              Serial.println(valStepper);
+              // Arm 1
+
+              ServoxPos = posArm1[i];
+              moveTo(ServoxPos, ServoxVelocity);
+              Serial.print("Servo Position = ");
+              Serial.println(ServoxPos);
+              delay(2000);
+            }
+
+
+          }
+          break;
+        case 'c':
+          if (movementCont > 0) {
+            posBase[movementCont]=0;
+            posBase[movementCont]=0;
+            movementCont = movementCont - 1;
+            Serial.println("Remove last Movement");
+          }
+          break;
+        case 'v':
+          Serial.println("Movement Save Show:");
+          if (movementCont > 0) {
+            for (int i = 0; i < movementCont; i++) {
+              Serial.print("Movement Cont = ");
+              Serial.println(i+1);
+              Serial.print("Servo Position = ");
+              Serial.println(posArm1[i]);
+              Serial.print("Stepper position = ");
+              Serial.println(posBase[i]);
+            }
+
+
           }
           break;
         //Reset
@@ -144,9 +217,9 @@ void reset() {
   ServoxPos = 90;
   moveTo(ServoxPos, 30);
 
-   valStepper = -valStepper;
-   myStepper.step(valStepper);
-   valStepper = 0;
+  valStepper = -valStepper;
+  myStepper.step(valStepper);
+  valStepper = 0;
   Serial.println("Reset");
 }
 

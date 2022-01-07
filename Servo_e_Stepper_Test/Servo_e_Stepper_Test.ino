@@ -29,6 +29,9 @@ int SteperLimit = 1024;
 //Var Utils
 boolean power = false;
 
+//Led Utils 
+const int pinLedAccensione = 10;
+
 
 void setup() {
   //Setup Porta Seriale
@@ -36,7 +39,7 @@ void setup() {
 
   //Button Input
   //pinMode(button_1, INPUT);
-  //pinMode(button_2, INPUT);
+  //pinMode(pinLedAccensione, OUTPUT);
 
   //Setup Servo
   Servox.attach (servoPin);
@@ -45,6 +48,10 @@ void setup() {
 
   //Stepper Motor
   myStepper.setSpeed(15);
+
+
+  //Output Pin
+  pinMode(pinLedAccensione, OUTPUT);
 
 
   //Timer set
@@ -67,11 +74,13 @@ void loop() {
       if (power) {
         reset();
         power = false;
+        digitalWrite(pinLedAccensione,LOW);
         Serial.print("Power Off");
       } else {
          ServoxPos = 120;
          moveTo(ServoxPos, ServoxVelocity);
          power = true;
+         digitalWrite(pinLedAccensione,HIGH);
          Serial.print("Power On");
       }
 

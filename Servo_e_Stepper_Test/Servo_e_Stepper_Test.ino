@@ -6,12 +6,16 @@ MyTimer t1 = MyTimer();
 
 //Servo Utils
 Servo Servox;
-int servoPin = 7;
+Servo Servox2;
+int ServoxPin = 7;
 int ServoxVelocity = 30;
 int ServoxPos = 90;
 int ServoxConst = 15;
 int ServoxLimitS = 140;
 int ServoxLimitD = 40;
+
+int ServoxPin2 = 35;
+int ServoxPos2 = 90;
 
 //Stepper Motor Utils
 const int stepsPerRevolution = 2048;
@@ -46,8 +50,9 @@ void setup() {
   //pinMode(pinLedAccensione, OUTPUT);
 
   //Setup Servo
-  Servox.attach (servoPin);
-  Servox.write(ServoxPos);
+  Servox.attach (ServoxPin);
+  Servox2.attach (ServoxPin2);
+  moveto(ServoxPos);
   Serial.println("Servo position 90");
 
   //Stepper Motor
@@ -177,8 +182,8 @@ void loop() {
           break;
         case 'c':
           if (movementCont > 0) {
-            posBase[movementCont]=0;
-            posBase[movementCont]=0;
+            posBase[movementCont] = 0;
+            posBase[movementCont] = 0;
             movementCont = movementCont - 1;
             Serial.println("Remove last Movement");
           }
@@ -188,7 +193,7 @@ void loop() {
           if (movementCont > 0) {
             for (int i = 0; i < movementCont; i++) {
               Serial.print("Movement Cont = ");
-              Serial.println(i+1);
+              Serial.println(i + 1);
               Serial.print("Servo Position = ");
               Serial.println(posArm1[i]);
               Serial.print("Stepper position = ");

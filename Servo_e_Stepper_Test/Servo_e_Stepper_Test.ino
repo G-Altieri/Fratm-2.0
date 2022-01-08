@@ -9,8 +9,13 @@ MyTimer t1 = MyTimer();
 Servo Servox;
 Servo Servox2;
 Servo Servoy;
+Servo Servo1;
+Servo Servo2;
 int ServoxPin = 7;
 int ServoxPinY = 8;
+int ServoPin1 = 29;
+int ServoPin2 = 25;
+
 int ServoxVelocity = 10;
 int ServoxPos = 95;
 int ServoxConst = 15;
@@ -72,10 +77,13 @@ void setup() {
 
   //Setup Servo
   Servox.attach (ServoxPin);
-  Servox2.attach (ServoxPin2);
+  Servo1.attach (ServoPin1);
+  Servo2.attach (ServoPin2);
   Servoy.attach (ServoxPinY);
-  moveTo(0, ServoxVelocity,Servox);
+  moveTo(90, ServoxVelocity,Servox);
   moveTo(170, ServoxVelocity,Servoy);
+   moveTo(40, ServoxVelocity,Servo1);
+    moveTo(150, ServoxVelocity,Servo2);
   Serial.println("Servo position 90");
 
   //Stepper Motor

@@ -11,23 +11,28 @@ Servo Servox2;
 Servo Servoy;
 Servo Servo1;
 Servo Servo2;
-int ServoxPin = 7;
-int ServoxPinY = 8;
+int ServoPinX = 7;
+int ServoPinY = 8;
 int ServoPin1 = 29;
 int ServoPin2 = 25;
 
-int ServoxVelocity = 10;
+//Servo X
+int ServoxVelocity = 30;
 int ServoxPos = 95;
 int ServoxConst = 15;
 int ServoxLimitS = 150;
 int ServoxLimitD = 30;
+
+//Servo Y
+int ServoyPos = 95;
 int ServoyLimitS = 150;
 int ServoyLimitD = 30;
 
-int ServoxPin2 = 35;
-int ServoxPos2 = 90;
+//Servo 1
+int Servo1Pos = 90;
 
-int ServoyPos = 95;
+//Servo 2
+int Servo2Pos = 90;
 
 //Stepper Motor Utils
 const int stepsPerRevolution = 2048;
@@ -76,14 +81,15 @@ void setup() {
   //pinMode(pinLedAccensione, OUTPUT);
 
   //Setup Servo
-  Servox.attach (ServoxPin);
+  Servox.attach (ServoPinX);
+  Servoy.attach (ServoPinY);
   Servo1.attach (ServoPin1);
   Servo2.attach (ServoPin2);
-  Servoy.attach (ServoxPinY);
+ 
   moveTo(90, ServoxVelocity,Servox);
   moveTo(170, ServoxVelocity,Servoy);
-   moveTo(40, ServoxVelocity,Servo1);
-    moveTo(150, ServoxVelocity,Servo2);
+  moveTo(40, ServoxVelocity,Servo1);
+  moveTo(150, ServoxVelocity,Servo2);
   Serial.println("Servo position 90");
 
   //Stepper Motor

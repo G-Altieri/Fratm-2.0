@@ -14,7 +14,7 @@ Servo Servo2;
 int ServoPinX = 7;
 int ServoPinY = 8;
 int ServoPin1 = 29;
-int ServoPin2 = 25;
+int ServoPin2 = 43;
 
 //Servo X
 int ServoxVelocity = 30;
@@ -22,9 +22,11 @@ int ServoxPos = 95;
 int ServoxConst = 15;
 int ServoxLimitS = 150;
 int ServoxLimitD = 30;
-
+int TestPos1 = 90;
+int TestPos2 = 90;
+int TestVariazione = 10;
 //Servo Y
-int ServoyPos = 95;
+int ServoyPos = 0;
 int ServoyLimitS = 150;
 int ServoyLimitD = 30;
 
@@ -82,14 +84,22 @@ void setup() {
 
   //Setup Servo
   Servox.attach (ServoPinX);
-  Servoy.attach (ServoPinY);
+  Servoy.attach (8);
   Servo1.attach (ServoPin1);
   Servo2.attach (ServoPin2);
- 
-  moveTo(90, ServoxVelocity,Servox);
-  moveTo(170, ServoxVelocity,Servoy);
-  moveTo(40, ServoxVelocity,Servo1);
-  moveTo(150, ServoxVelocity,Servo2);
+
+  Servox.write(90);
+  Servo1.write(90);
+  delay(2000);
+  Servoy.write(0);
+  delay(500);
+
+  delay(500);
+  Servo2.write(0);
+  /* moveTo(90, ServoxVelocity,Servox);
+    moveTo(170, ServoxVelocity,Servoy);
+    moveTo(40, ServoxVelocity,Servo1);
+    moveTo(150, ServoxVelocity,Servo2);*/
   Serial.println("Servo position 90");
 
   //Stepper Motor
@@ -107,7 +117,7 @@ void setup() {
   Serial.println("Arduino is ready, power Off");
 
 }//setup
-boolean songRun=false;
+boolean songRun = false;
 void loop() {
 
 
@@ -125,8 +135,8 @@ void loop() {
         tone(pinBuzzer, 500, 100);
         Serial.print("Power Off");
       } else {
-        ServoxPos = 120;
-        moveTo(ServoxPos, ServoxVelocity,Servox);
+       // ServoxPos = 120;
+      //  moveTo(ServoxPos, ServoxVelocity, Servox);
         power = true;
         digitalWrite(pinLedAccensione, HIGH);
 
@@ -148,27 +158,37 @@ void loop() {
       switch (x) {
         /*Stepper Control*/
         case 'a':
-          if (valStepper < SteperLimit) {
+          TestPos1 = TestPos1 + TestVariazione;
+          TestPos2 = TestPos2 - TestVariazione;
+
+          Servox.write(TestPos1);
+          Servo1.write(TestPos2);
+          /*if (valStepper < SteperLimit) {
             myStepper.step(stepX);
             valStepper = valStepper + stepX;
             Serial.print("Round positive = ");
             Serial.println(valStepper);
-          }
+            }*/
           break;
         case 'd':
-          if (valStepper > -SteperLimit) {
-            myStepper.step(-stepX);
-            valStepper = valStepper - stepX;
-            Serial.print("Round negative = ");
-            Serial.println(valStepper);
-          }
+           TestPos1 = TestPos1 - TestVariazione;
+          TestPos2 = TestPos2 + TestVariazione;
+
+          Servox.write(TestPos1);
+          Servo1.write(TestPos2);
+          /* if (valStepper > -SteperLimit) {
+             myStepper.step(-stepX);
+             valStepper = valStepper - stepX;
+             Serial.print("Round negative = ");
+             Serial.println(valStepper);
+            }*/
           break;
 
         /*Servo Control*/
         case 'w':
           if ((ServoxPos + ServoxConst) <= ServoxLimitS) {
             ServoxPos = ServoxPos + ServoxConst;
-            moveTo(ServoxPos, ServoxVelocity,Servox);
+            moveTo(ServoxPos, ServoxVelocity, Servox);
             Serial.print("Servo X Position = ");
             Serial.println(ServoxPos);
           }
@@ -176,26 +196,39 @@ void loop() {
         case 's':
           if ((ServoxPos - ServoxConst) >= ServoxLimitD) {
             ServoxPos = ServoxPos - ServoxConst;
-            moveTo(ServoxPos, ServoxVelocity,Servox);
+            moveTo(ServoxPos, ServoxVelocity, Servox);
             Serial.print("Servo X Position = ");
             Serial.println(ServoxPos);
           }
           break;
-          case 'f':
-          if ((ServoyPos + ServoxConst) <= ServoyLimitS) {
+        case 'f':
+        ServoyPos = ServoyPos - 10;
+
+          Servoy.write(ServoyPos);
+
+             Serial.print("Servo Y Position = ");
+            Serial.println(ServoyPos);
+        
+         /* if ((ServoyPos + ServoxConst) <= ServoyLimitS) {
             ServoyPos = ServoyPos + ServoxConst;
-            moveTo(ServoyPos, ServoxVelocity,Servoy);
+            moveTo(ServoyPos, ServoxVelocity, Servoy);
             Serial.print("Servo Y Position = ");
             Serial.println(ServoyPos);
-          }
+          }*/
           break;
         case 'g':
+              ServoyPos = ServoyPos + 10;
+
+          Servoy.write(ServoyPos);
+              Serial.print("Servo Y Position = ");
+            Serial.println(ServoyPos);
+        /*
           if ((ServoyPos - ServoxConst) >= ServoyLimitD) {
             ServoyPos = ServoyPos - ServoxConst;
-            moveTo(ServoyPos, ServoxVelocity,Servoy);
+            moveTo(ServoyPos, ServoxVelocity, Servoy);
             Serial.print("Servo Y Position = ");
             Serial.println(ServoyPos);
-          }
+          }*/
           break;
         case 'z':
           if (movementCont < 5) {
@@ -228,7 +261,7 @@ void loop() {
               // Arm 1
 
               ServoxPos = posArm1[i];
-              moveTo(ServoxPos, ServoxVelocity,Servox);
+              moveTo(ServoxPos, ServoxVelocity, Servox);
               Serial.print("Servo Position = ");
               Serial.println(ServoxPos);
               delay(2000);
@@ -261,7 +294,7 @@ void loop() {
           }
           break;
         case 't':
-songRun=true;
+          songRun = true;
           for (int thisNote = 0; thisNote < songLength; thisNote++) {
             // determine the duration of the notes that the computer understands
             // divide 1000 by the value, so the first note lasts for 1000/8 milliseconds
@@ -272,23 +305,23 @@ songRun=true;
             delay(pause);
             // stop the tone
             noTone(pinBuzzer);
-            songRun=false;
+            songRun = false;
           }
           break;
         case 'y':
-        songRun=true;
-        for(int j=0;j<2;j++){
-          for (int i = 700; i < 800; i++) {
-            tone(pinBuzzer, i);
-            delay(15);
+          songRun = true;
+          for (int j = 0; j < 2; j++) {
+            for (int i = 700; i < 800; i++) {
+              tone(pinBuzzer, i);
+              delay(15);
+            }
+            for (int i = 800; i > 700; i--) {
+              tone(pinBuzzer, i);
+              delay(15);
+            }
+            noTone(pinBuzzer);
+            songRun = false;
           }
-          for (int i = 800; i > 700; i--) {
-            tone(pinBuzzer, i);
-            delay(15);
-          }
-             noTone(pinBuzzer);
-             songRun=false;
-        }
           break;
         //Reset
         case 'r':
@@ -307,9 +340,9 @@ songRun=true;
 
 void reset() {
   ServoxPos = 95;
-  moveTo(ServoxPos, 30,Servox);
-   ServoyPos = 95;
-  moveTo(ServoyPos, 30,Servoy);
+  moveTo(ServoxPos, 30, Servox);
+  ServoyPos = 95;
+  moveTo(ServoyPos, 30, Servoy);
 
   valStepper = -valStepper;
   myStepper.step(valStepper);
@@ -321,7 +354,7 @@ void reset() {
 int pos1 = 90;
 int mapSpeed;
 int pos;
-void moveTo(int position, int speed,Servo x) {
+void moveTo(int position, int speed, Servo x) {
   mapSpeed = map(speed, 0, 30, 30, 0);
   if (position > pos) {
     for (pos = pos1; pos <= position; pos += 1) {

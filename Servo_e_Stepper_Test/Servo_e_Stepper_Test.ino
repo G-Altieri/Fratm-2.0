@@ -16,27 +16,27 @@ Servo Servo2;
 //Pin Servo
 int ServoPinX = 7;
 int ServoPinX2 = 6;
-int ServoPinY = 8;
-int ServoPinY2 = 8;
+int ServoPinY = 41;
+int ServoPinY2 = 39;
 int ServoPin1 = 29;
 int ServoPin2 = 43;
 
 //Servo X
 int ServoxPos = 90;
 int Servox2Pos = 90;
-int ServoxVelocity = 10;
-int ServoxConst = 15;
+int ServoxVelocity = 5;
+int ServoxConst = 35;
 int ServoxLimitS = 150;
 int ServoxLimitD = 40;
-int ServoxVelocityStatus = true;
+int ServoxVelocityStatus = false;
 
 //Servo Y
 int ServoyPos = 0;
 int Servoy2Pos = 0;
 int ServoyVelocity = 15;
 int ServoyConst = 15;
-int ServoyLimitS = 150;
-int ServoyLimitD = 40;
+int ServoyLimitS = 0;
+int ServoyLimitD = 180;
 int ServoyVelocityStatus = true;
 
 //Servo 1
@@ -94,9 +94,65 @@ void setup() {
   Servox2.attach(ServoPinX2);
   Servoy.attach(ServoPinY);
   Servoy2.attach(ServoPinY2);
-  moveTo(ServoxPos, ServoxVelocity, Servox, true);
-  moveTo(Servox2Pos, ServoxVelocity, Servox2, true);
+ // moveTo(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus,90);
+ // moveTo(Servox2Pos, ServoxVelocity, Servox2, ServoxVelocityStatus,90);
 
+/*Servox.write(90);
+Servox2.write(90);*/
+delay(500);
+//int a = 180;
+//int b = 0;
+/*for(int i;i<90;i=i+1){
+  a = a-1;
+  b = b+1;
+     Serial.print("a");
+   Serial.println(a);
+     Serial.print("b");
+   Serial.println(b);
+  Servoy.write(a);
+Servoy2.write(b);
+delay(30);
+  }
+/*
+Servoy.write(90);
+Servoy2.write(90);
+delay(500);
+Servoy.write(0);
+Servoy2.write(180);*/
+/*
+Servox.write(90);
+Servox2.write(90);
+/*delay(500);
+ * 
+ */Servoy.write(0);
+Servoy2.write(180);
+delay(500);
+Servox.write(90);
+Servox2.write(90);
+
+int a = 90;
+int b = 90;
+/*
+for(int i;i<130;i=i+1){
+  a = a+1;
+  b = b-1;
+  Servox.write(a);
+Servox2.write(b);
+delay(20);
+  }
+  */
+  
+ /* for(int i=0;i<30;i=i+1){
+  a = a+1;
+  b = b-1;
+  Servoy.write(a);
+Servoy2.write(b);
+delay(20);
+  }/*
+  delay(1500);
+Servoy.write(90);
+Servoy2.write(90);
+delay(500);*/
 
   //Stepper Motor
   myStepper.setSpeed(15);
@@ -223,21 +279,50 @@ void reset() {
 int pos1 = 90;
 int mapSpeed;
 int pos;
-void moveTo(int position, int speed, Servo x, boolean type) {
+void moveTo(int position, int speed, Servo x, boolean type, int oldPos) {
   if (type) {
     x.write(position);
   } else {
+    Serial.print("movimento lento");
     mapSpeed = map(speed, 0, 30, 30, 0);
-    if (position > pos) {
-      for (pos = pos1; pos <= position; pos += 1) {
-        x.write(pos);
-        pos1 = pos;
+    if (position > oldPos) {
+          Serial.print("movimento 1");
+      for (oldPos = pos1; oldPos <= position; oldPos += 1) {
+        x.write(oldPos);
+        pos1 = oldPos;
         delay(mapSpeed);
       }
     } else {
-      for (pos = pos1; pos >= position; pos -= 1) {
-        x.write(pos);
-        pos1 = pos;
+      for (oldPos = pos1; oldPos >= position; oldPos -= 1) {
+        x.write(oldPos);
+         Serial.print("movimento 2");
+        pos1 = oldPos;
+        delay(mapSpeed);
+      }
+    }
+  }
+
+}
+int pos12 = 90;
+void moveTo(int position, int speed, Servo x, boolean type, int oldPos, Servo x2) {
+  if (type) {
+    x.write(position);
+  } else {
+    Serial.print("movimento lento");
+    mapSpeed = map(speed, 0, 30, 30, 0);
+    if (position > oldPos) {
+       Serial.print("movimento 1");
+      for (oldPos = pos12; oldPos <= position; oldPos += 1) {
+        x.write(oldPos);
+        x2.write(oldPos);
+        pos1 = oldPos;
+        delay(mapSpeed);
+      }
+    } else {
+      for (oldPos = pos12; oldPos >= position; oldPos -= 1) {
+        x.write(oldPos);
+         x2.write(oldPos);
+        pos12 = oldPos;
         delay(mapSpeed);
       }
     }
@@ -247,10 +332,12 @@ void moveTo(int position, int speed, Servo x, boolean type) {
 /*Method for Servo X*/
 void moveUpServoX() {
   if ((ServoxPos + ServoxConst) <= ServoxLimitS) {
+  int pos = ServoxPos;
+     int pos2 = Servox2Pos;
     ServoxPos = ServoxPos + ServoxConst;
     Servox2Pos = Servox2Pos - ServoxConst;
-    moveTo(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus);
-    moveTo(Servox2Pos, ServoxVelocity, Servox2, ServoxVelocityStatus);
+    //moveTo(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus,pos);
+   // moveTo(Servox2Pos, ServoxVelocity, Servox2, ServoxVelocityStatus,pos2);
     Serial.print("Servo X Position = ");
     Serial.print(ServoxPos);
     Serial.print(" Servo X2 Position = ");
@@ -265,11 +352,35 @@ void moveUpServoX() {
     }*/
 }
 void moveDownServoX() {
-  if ((ServoxPos - ServoxConst) >= ServoxLimitD) {
+ /* if ((ServoxPos - ServoxConst) >= ServoxLimitD) {
+    int pos = ServoxPos;
+  
     ServoxPos = ServoxPos - ServoxConst;
     Servox2Pos = Servox2Pos + ServoxConst;
-    moveTo(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus);
-    moveTo(Servox2Pos, ServoxVelocity, Servox2, ServoxVelocityStatus);
+   // moveTo(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus,pos);
+   // moveTo(Servox2Pos, ServoxVelocity, Servox2, ServoxVelocityStatus,pos2);
+   // moveTo2(ServoxPos, ServoxVelocity, Servox, ServoxVelocityStatus,pos, Servox2);
+     Serial.print("movimento lento");
+   // mapSpeed = map(10, 0, 30, 30, 0);
+    if (140 > pos) {*/
+       Serial.print("movimento 1");
+       int c=90;
+        int p=90;
+      for (pos = 0; pos <= 270; pos += 1) {
+        
+        Servox.write(p+1);
+        Servox2.write(c-1);
+        pos12 = pos;
+        delay(30);
+      }
+ /*   } else {
+      for (oldPos = pos12; oldPos >= position; oldPos -= 1) {
+        x.write(oldPos);
+         x2.write(oldPos);
+        pos12 = oldPos;
+        delay(mapSpeed);
+      }
+    }*/
     Serial.print("Servo X Position = ");
     Serial.print(ServoxPos);
     Serial.print(" Servo X2 Position = ");
@@ -281,14 +392,14 @@ void moveDownServoX() {
      Serial.print("Servo X Position = ");
      Serial.println(ServoxPos);
     }*/
-}
+
 /*Method for Servo Y*/
 void moveUpServoY() {
   if ((ServoyPos + ServoyConst) <= ServoyLimitS) {
     ServoyPos = ServoyPos + ServoyConst;
     Servoy2Pos = Servoy2Pos - ServoyConst;
-    moveTo(ServoyPos, ServoyVelocity, Servoy, ServoyVelocityStatus);
-    moveTo(Servoy2Pos, ServoyVelocity, Servoy2, ServoyVelocityStatus);
+  //  moveTo(ServoyPos, ServoyVelocity, Servoy, ServoyVelocityStatus);
+   // moveTo(Servoy2Pos, ServoyVelocity, Servoy2, ServoyVelocityStatus);
     Serial.print("Servo Y Position = ");
     Serial.print(ServoyPos);
     Serial.print(" Servo Y2 Position = ");
@@ -299,8 +410,8 @@ void moveDownServoY() {
   if ((ServoyPos - ServoyConst) >= ServoyLimitD) {
     ServoyPos = ServoyPos - ServoyConst;
     Servoy2Pos = Servoy2Pos + ServoyConst;
-    moveTo(ServoyPos, ServoyVelocity, Servoy, ServoyVelocityStatus);
-    moveTo(Servoy2Pos, ServoyVelocity, Servoy2, ServoyVelocityStatus);
+   // moveTo(ServoyPos, ServoyVelocity, Servoy, ServoyVelocityStatus);
+   // moveTo(Servoy2Pos, ServoyVelocity, Servoy2, ServoyVelocityStatus);
     Serial.print("Servo Y Position = ");
     Serial.print(ServoyPos);
     Serial.print(" Servo Y2 Position = ");
@@ -359,7 +470,7 @@ void movementStart() {
       // Arm 1
 
       ServoxPos = posArm1[i];
-      moveTo(ServoxPos, ServoxVelocity, Servox, true);
+      moveTo(ServoxPos, ServoxVelocity, Servox, true, 90);
       Serial.print("Servo Position = ");
       Serial.println(ServoxPos);
       delay(2000);
